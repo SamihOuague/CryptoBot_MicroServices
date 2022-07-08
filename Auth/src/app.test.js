@@ -5,7 +5,9 @@ require("./db/mongoose");
 
 const userOne = {
     username: "username",
-    password: "password"
+    password: "password",
+    apiKey: "test",
+    secretKey: "test",
 }
 
 const userTwo = {
@@ -66,8 +68,24 @@ describe("POST /login", () => {
         let response = await request(app).post("/login").send(userThree);
         expect(response.statusCode).toBe(400);
     });
+
+    it("should respond with 200 status code", async () => {
+        let response = await request(app).post("/login").send(userOne);
+        let token = response.body.token;
+        let sign = await request(app).post("/update-api").set({"Authorization": "Barear "+token}).send({
+            apiKey: "test",
+            secretKey: "test"
+        });
+        expect(sign.statusCode).toBe(200);
+    });
 });
 
-describe("GET /ping", () => {
-
+describe("GET /get-keys", () => {
+    it("Should respond with 200 status code", async () => {
+        let response = await request(app).post("/login").send(userOne);
+        let token = response.body.token;
+        let keys = await request(app).get("/get-keys").set({"Authorization": "Barear "+token});
+        console.log(keys.body);
+        expect(keys.status).toBe(200);
+    });
 });

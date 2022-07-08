@@ -6,6 +6,10 @@ services:
       - "27017:27017"
     volumes:
       - botvolumes:/var/bot
+  manager:
+    build: ./Manager
+  bot:
+    build: ./Bot
 
 volumes:
   botvolumes: {}
