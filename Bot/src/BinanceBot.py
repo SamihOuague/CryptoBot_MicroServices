@@ -23,7 +23,7 @@ class BinanceBot:
             if "orderId" in  response:
                 self.sellPosition = price
                 self.stopLoss = price + (price * 0.01)
-                self.takeProfit = price - (price * 0.03)
+                self.takeProfit = price - (price * 0.02)
             return response
         elif self.sellPosition and price >= self.stopLoss:
             response = requests.post("http://manager:3002/repay-position").json()

@@ -1,25 +1,16 @@
 const mongoose = require("mongoose");
 
 const Schema = new mongoose.Schema({
-    username: {
+    symbol: {
         type: String,
         required: true,
         unique: true
     },
-    password: {
-        type: String,
-        required: true
+    actived: {
+        type: Boolean,
+        defaultValue: true
     },
-    apiKey: {
-        type: String,
-        required: false,
-        default: null,
-    },
-    secretKey: {
-        type: String,
-        required: false,
-        default: null
-    }
-}, {collection: "user"});
+    logs: [String]
+});
 
-module.exports = mongoose.model("user", Schema);
+module.exports = mongoose.model("manager", Schema);

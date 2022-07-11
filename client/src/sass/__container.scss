@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    justify-content: center;
+    &__manager {
+        max-width: 420px;
+        border: 2px solid black;
+        flex: 1;
+        margin-top: 32px;
+        &--title {
+            text-align: center;
+        }
+        &--funds {
+            text-align: center;
+            font-size: larger;
+        }
+        &__onoff {
+            display: flex;
+            justify-content: center;
+            margin-top: 32px;
+        }
+        &__logs {
+            margin-top: 56px;
+            &__log {
+                display: flex;
+                justify-content: space-around;
+                border-bottom: 1px solid black;
+            }
+        }
+    }
+}
