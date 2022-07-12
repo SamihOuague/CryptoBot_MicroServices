@@ -4,49 +4,24 @@ let Model = require("./users/Model");
 require("./db/mongoose");
 
 const userOne = {
-    username: "username",
-    password: "password",
-    apiKey: "test",
-    secretKey: "test",
-}
-
-const userTwo = {
-    username: "username1",
-    password: "password"
+    username: "admin",
+    password: "admin123",
 }
 
 const userThree = {
-    username: "username2",
-    password: "password"
+    username: "admin2",
+    password: "admin123",
 }
 
 beforeEach(async () => {
-    await Model.deleteMany();
-    let model = new Model(userOne);
-    await model.save();
+    await Model.deleteMany({});
+    let user = new Model({
+        username: process.env.USERNAME,
+        password: process.env.PWD
+    });
+    await user.save();
 });
 
-describe("POST /register", () => {
-    it("should respond with 201 status code", async () => {
-        let response = await request(app).post("/register").send(userTwo);
-        expect(response.statusCode).toBe(201);
-    });
-
-    it("should respond with token", async () => {
-        let response = await request(app).post("/register").send(userTwo);
-        expect(typeof response.body.token).toBe("string");
-    });
-
-    it("should respond with a different user password", async () => {
-        let response = await request(app).post("/register").send(userTwo);
-        expect(response.body.password).not.toEqual(userTwo.password);
-    });
-
-    it("should respond with 400 status code", async () => {
-        let response = await request(app).post("/register").send(userOne);
-        expect(response.statusCode).toBe(400);
-    });
-});
 
 describe("POST /login", () => {
     it("should respond with 200 status code", async () => {
@@ -69,23 +44,16 @@ describe("POST /login", () => {
         expect(response.statusCode).toBe(400);
     });
 
+});
+
+describe("POST /update-api", () => {
     it("should respond with 200 status code", async () => {
         let response = await request(app).post("/login").send(userOne);
         let token = response.body.token;
         let sign = await request(app).post("/update-api").set({"Authorization": "Barear "+token}).send({
-            apiKey: "test",
-            secretKey: "test"
+            apiKey: "kM3WtbEleVRw2UzA5DSlSBWGnEeQ61b1j6Q4pK5AaNPrd57pKyRhdd0n0CSHuGXp",
+            secretKey: "YPGFrZLqtJjWiMb5FvVnolaQwjLgLIUtqg3vZhdb4rHZuWu9y8KZunE4LlndOPBY"
         });
         expect(sign.statusCode).toBe(200);
-    });
-});
-
-describe("GET /get-keys", () => {
-    it("Should respond with 200 status code", async () => {
-        let response = await request(app).post("/login").send(userOne);
-        let token = response.body.token;
-        let keys = await request(app).get("/get-keys").set({"Authorization": "Barear "+token});
-        console.log(keys.body);
-        expect(keys.status).toBe(200);
     });
 });

@@ -13,9 +13,12 @@ def priceAction(candles):
 
 bot = BinanceBot(priceAction)
 
+sleep(15)
+token = requests.post("http://manager:3002/bot-connect", json={"pwd": "helloworld123"}).json()["token"]
+
 while True:
     try:
-        r = bot.makeDecision()
+        r = bot.makeDecision(token)
         if "disabled" in r:
             sleep(300)
         else:

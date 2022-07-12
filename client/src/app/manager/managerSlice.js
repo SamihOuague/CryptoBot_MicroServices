@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAssetThunk, getSymbolThunk } from "./api/managerThunks";
+import { getAssetThunk, getSymbolThunk, switchSymbolThunk,  } from "./api/managerThunks";
 
 export const managerSlice = createSlice({
     name: "manager",
@@ -19,6 +19,10 @@ export const managerSlice = createSlice({
         });
 
         builder.addCase(getSymbolThunk.fulfilled, (state, action) => {
+            state.symbol = action.payload;
+        });
+
+        builder.addCase(switchSymbolThunk.fulfilled, (state, action) => {
             state.symbol = action.payload;
         });
     }

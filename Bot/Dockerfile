@@ -11,4 +11,4 @@ WORKDIR /app
 
 VOLUME /app/logs
 
-CMD ["python3", "-u", "index.py"]
+CMD ["python3", "index.py"]

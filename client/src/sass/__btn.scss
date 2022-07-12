@@ -1,0 +1,20 @@
+.btn {
+    &--onoff {
+        font-size: 32px;
+        border-radius: 50%;
+        width: 75px;
+        height: 75px;
+        background-color: rgb(36, 34, 34);
+        cursor: pointer;
+    }
+
+    &--red {
+        color: red;
+        border: 2px solid red;
+    }
+
+    &--green {
+        color: green;
+        border: 2px solid green;
+    }
+}

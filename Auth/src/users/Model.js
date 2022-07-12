@@ -12,6 +12,14 @@ const Schema = new mongoose.Schema({
         type: String,
         required: true
     },
+    apiKey: {
+        type: String,
+        required: false,
+    },
+    secretKey: {
+        type: String,
+        required: false,
+    }
 });
 
 Schema.pre("save", function(next) {

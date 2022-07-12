@@ -1,6 +1,7 @@
 const Model = require("./Model");
 const jwt = require("jsonwebtoken");
 const secret = process.env.SECRETKEY;
+const fetchAssets = require("./api/fetch-assets");
 
 module.exports = {
     login: async (req, res) => {
@@ -16,43 +17,30 @@ module.exports = {
             return res.status(400).send({err});
         }
     },
-    register: async (req, res) => {
-        let model = new Model(req.body);
-        try {
-            let user = await model.save();
-            let token = jwt.sign({u: user.username, uid: user._id}, secret);
-            return res.status(201).send({token});
-        } catch (err) {
-            return res.status(400).send(err);
-        }
-    },
-    genSign: async (req, res) => {
-        try {
-            let token = req.headers.authorization.split(" ")[1];
-            let uid = jwt.verify(token, process.env.SECRETKEY).uid;
-            let user = await Model.findOne({_id: uid});
-            const { apiKey, secretKey } = user;
-            if (apiKey && secretKey)
-                return res.status(200).send({apiKey, secretKey});
-            else
-                return res.status(400).send({msg: "API Key not set"});
-        } catch(err) {
-            return res.status(400).send(err);
-        }
-    },
     updateAPIKey: async (req, res) => {
         try {
             let token = req.headers.authorization.split(" ")[1];
             let uid = jwt.verify(token, process.env.SECRETKEY).uid;
             let user = await Model.findOne({_id: uid});
-            if (req.body.apiKey && req.body.secretKey) {
-                user.apiKey = req.body.apiKey;
-                user.secretKey = req.body.apiKey;
-                let u = await user.save();
-                return res.status(200).send(u);
-            } else {
-                return res.sendStatus(400);
-            }
+            let asset = await fetchAssets(req.body.secretKey, req.body.apiKey);
+            if (!user || !asset.assets) return res.sendStatus(400);
+            user.apiKey = req.body.apiKey;
+            user.secretKey = req.body.secretKey;
+            let u = await user.save();
+            return res.status(200).send(u);
+        } catch(err) {
+            return res.status(400).send(err);
+        }
+    },
+    ping: async (req, res) => {
+        try {
+            let token = req.headers.authorization.split(" ")[1];
+            let uid = jwt.verify(token, process.env.SECRETKEY).uid;
+            let user = await Model.findOne({_id: uid});
+            if (!user) return res.sendStatus(400);
+            let asset = await fetchAssets(user.secretKey, user.apiKey);
+            if (!asset.assets) return res.status(200).send({connected: true, apikey: false});
+            return res.status(200).send({connected: true, apikey: true});
         } catch(err) {
             return res.status(400).send(err);
         }

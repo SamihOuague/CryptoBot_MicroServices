@@ -3,9 +3,9 @@
     justify-content: center;
     &__manager {
         max-width: 420px;
-        border: 2px solid black;
         flex: 1;
         margin-top: 32px;
+        background-color: rgba($color: white, $alpha: 0.1);
         &--title {
             text-align: center;
         }
@@ -23,7 +23,7 @@
             &__log {
                 display: flex;
                 justify-content: space-around;
-                border-bottom: 1px solid black;
+                border-bottom: 1px solid whitesmoke;
             }
         }
     }

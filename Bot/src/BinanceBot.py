@@ -15,23 +15,23 @@ class BinanceBot:
         self.candles = self.candles[len(c):] + c
         return self.candles
 
-    def makeDecision(self):
+    def makeDecision(self, token):
         price = float(ticker("BNBUSDT")["price"])
         self.updateCandles()
         if not self.sellPosition and self.sellAction(self.candles):
-            response = requests.post("http://manager:3002/sell-position").json()
+            response = requests.post("http://manager:3002/sell-position", headers={"Authorization": "Barear {}".format(token)}).json()
             if "orderId" in  response:
                 self.sellPosition = price
                 self.stopLoss = price + (price * 0.01)
                 self.takeProfit = price - (price * 0.02)
             return response
         elif self.sellPosition and price >= self.stopLoss:
-            response = requests.post("http://manager:3002/repay-position").json()
+            response = requests.post("http://manager:3002/repay-position", headers={"Authorization": "Barear {}".format(token)}).json()
             if "orderId" in  response:
                 self.sellPosition = False
             return response
         elif self.sellPosition and price <= self.takeProfit:
-            response = requests.post("http://manager:3002/repay-position").json()
+            response = requests.post("http://manager:3002/repay-position", headers={"Authorization": "Barear {}".format(token)}).json()
             if "orderId" in  response:
                 self.sellPosition = False
             return response

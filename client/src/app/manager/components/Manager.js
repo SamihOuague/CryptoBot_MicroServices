@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getAssetThunk, getSymbolThunk } from "../api/managerThunks";
+import { getAssetThunk, getSymbolThunk, switchSymbolThunk } from "../api/managerThunks";
 
 class Manager extends Component {
     componentDidMount() {
-        this.props.getAssetThunk();
-        this.props.getSymbolThunk();
+        this.props.getAssetThunk(this.props.auth.token);
+        this.props.getSymbolThunk(this.props.auth.token);
     }
 
     render() {
-        const { assets, symbol } = this.props;
+        const { assets, symbol } = this.props.manager;
         return(
             <div className="container">
-                <Funds assets={assets} symbol={symbol}/>
+                <Funds assets={assets} symbol={symbol} switchSymbol={() => this.props.switchSymbolThunk(this.props.auth.token)}/>
             </div>
         );
     }
@@ -36,14 +36,13 @@ const Funds = (props) => {
             gain = gain.join(".");
             nLogs.push({gain: gain, date: new Date(Number(log[0]))});
         }
-        console.log(logs);
         logs = nLogs.reverse();
         return (
             <div className="container__manager">
                 <h2 className="container__manager--title">{props.symbol.symbol}</h2>
                 <p className="container__manager--funds">{netFunds}$</p>
                 <div className="container__manager__onoff">
-                    <button className="btn--onoff">Off</button>
+                    <button className={(props.symbol.actived) ? "btn--onoff btn--green" : "btn--onoff btn--red"}onClick={() => props.switchSymbol()}>{(props.symbol.actived) ? "On" : "Off"}</button>
                 </div>
                 {<div className="container__manager__logs">
                     {logs.map((value, key) => (
@@ -63,12 +62,13 @@ const Funds = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    return state.manager;
+    return state;
 }
 
 const mapDispatchToProps = {
     getAssetThunk,
     getSymbolThunk,
+    switchSymbolThunk
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Manager);

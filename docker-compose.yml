@@ -6,8 +6,18 @@ services:
       - "27017:27017"
     volumes:
       - botvolumes:/var/bot
+  auth:
+    build: ./Auth
+    ports:
+      - "3001:3001"
   manager:
     build: ./Manager
+    ports:
+      - "3002:3002"
+  client:
+    build: ./Front
+    ports:
+      - "3000:3000"
   bot:
     build: ./Bot
 

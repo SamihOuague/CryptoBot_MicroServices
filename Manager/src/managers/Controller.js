@@ -1,5 +1,6 @@
 const { assets, order, borrow, ticker } = require("./api/binanceAPI");
 const Model = require("./Model");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
     getAssets: async (req, res) => {
@@ -7,7 +8,7 @@ module.exports = {
             let response = await assets("BNBUSDT");
             return res.status(200).send(response.assets[0]);
         } catch(err) {
-            return res.sendStatus(400);
+            return res.status(400).send({err});
         }
     },
     sellPosition: async (req, res) => {
@@ -30,9 +31,9 @@ module.exports = {
             f[1] = f[1].substring(0, 2);
             f = f.join(".");
             o = await order("SELL", f, "BNBUSDT");
-            return res.status(200).send({});
+            return res.status(200).send(o);
         } catch(err) {
-            return res.sendStatus(400);
+            return res.status(400).send({err});
         }
     },
     repayPosition: async (req, res) => {
@@ -61,7 +62,7 @@ module.exports = {
             if (!symbol) return res.sendStatus(400);
             return res.status(200).send(symbol);
         } catch(err) {
-            return res.sendStatus(400);
+            return res.status(400).send({err});
         }
     },
     symbolSwitch: async (req, res) => {
@@ -73,7 +74,16 @@ module.exports = {
             let s = await symbol.save();
             return res.status(200).send(s);
         } catch(err) {
-            return res.sendStatus(400);
+            return res.status(400).send({err});
+        }
+    },
+    botConnect: async (req, res) => {
+        try {
+            if (req.body.pwd != process.env.BOTPWD) return res.status(400).send({msg: "Unauthorized"});
+            let token = jwt.sign({name: "zbiboubot"}, process.env.SECRETJWT);
+            return res.status(200).send({token});
+        } catch(err) {
+            return res.status(400).send({msg: "Unauthorized"});
         }
     }
 }
