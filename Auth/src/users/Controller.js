@@ -9,10 +9,10 @@ module.exports = {
         if (!username || !password) return res.sendStatus(400);
         try {
             let user = await Model.findOne({username});
-            if (user && user.comparePwd(password)) {
+            if (user && user.password == password) {
                 let token = jwt.sign({u: user.username, uid: user._id}, secret);
-                return res.send({token}); 
-            } else return res.sendStatus(400);
+                return res.status(200).send({token}); 
+            } else return res.status(400).send({password: user.password});
         } catch(err) {
             return res.status(400).send({err});
         }

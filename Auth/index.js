@@ -11,7 +11,6 @@ require("./src/db/mongoose");
         secretKey: ""
     });
     await user.save();
-}
-)()
+})();
 
 app.listen(process.env.PORT);
