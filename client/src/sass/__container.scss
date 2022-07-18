@@ -1,11 +1,12 @@
 .container {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     &__manager {
-        max-width: 420px;
         flex: 1;
         margin-top: 32px;
         background-color: rgba($color: white, $alpha: 0.1);
+        min-width: 320px;
         &--title {
             text-align: center;
         }

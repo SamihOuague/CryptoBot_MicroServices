@@ -25,13 +25,14 @@ body {
 
 .container {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .container__manager {
-  max-width: 420px;
   flex: 1;
   margin-top: 32px;
   background-color: rgba(255, 255, 255, 0.1);
+  min-width: 320px;
 }
 .container__manager--title {
   text-align: center;
