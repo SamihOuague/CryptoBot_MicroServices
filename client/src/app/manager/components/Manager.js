@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 class Manager extends Component {
     createLogs = (symbol) => {
         let logs = symbol.logs;
-        logs = ["1657731610071 25.49024888", "1657813176809 27.17364888", "1657850366024 26.46034888", "1657876829328 25.39564888", "1657910611366 24.62764888", "1657987558793 23.63664888", "1658028463566 23.02007448", "1658059134169 21.98242888"];
         let nLogs = [];
         for (let i = 1; i < logs.length; i++) {
             let log = logs[i].split(" ");
