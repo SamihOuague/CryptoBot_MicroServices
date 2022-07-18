@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAssetThunk, getSymbolThunk, switchSymbolThunk,  } from "./api/managerThunks";
+import { getAssetThunk, getSymbolThunk, switchSymbolThunk } from "./api/managerThunks";
 
 export const managerSlice = createSlice({
     name: "manager",
     initialState: {
-        symbol: null,
-        assets: null,
+        symbol: {},
+        assets: {},
         loading: true,
     },
     reducers: {

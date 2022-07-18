@@ -1,36 +1,23 @@
 import React, { Component } from "react";
-import Manager from "./app/manager/components/Manager";
 import Auth from "./app/auth/components/Auth";
+import UpdateLogs from "./app/auth/components/UpdateLogs";
 import UpdateKey from "./app/auth/components/UpdateKey";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import { connect } from "react-redux";
-import { pingThunk } from "./app/auth/api/authThunks";
+import Main from "./Main";
 
 class App extends Component {
-    componentDidMount() {
-        if (localStorage.getItem("token"))
-            this.props.pingThunk(localStorage.getItem("token"));
-    }
-
     render() {
-        return(    
-            <Router {...this.props}/>
-        );
-    }
-}
-
-const Router = (props) => {
-    if (props.token && !props.apiSet) {
         return(
-            <UpdateKey/>
-        );
-    } else if (props.token && props.apiSet) {
-        return(
-            <Manager/>
-        );
-    } else {
-        return(
-            <Auth/>
+            <div>
+                <Routes>
+                    <Route path="/" element={<Main/>}/>
+                    <Route path="/login" element={<Auth/>}/>
+                    <Route path="/update-api" element={<UpdateKey/>}/>
+                    <Route path="/update-user" element={<UpdateLogs/>}/>
+                </Routes>
+            </div>
         );
     }
 }
@@ -39,8 +26,4 @@ const mapStateToProps = (state) => {
     return state.auth;
 }
 
-const mapDispatchToProps = {
-    pingThunk
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { updateApiThunk } from "../api/authThunks";
+import { updateApiThunk, pingThunk } from "../api/authThunks";
 
 class UpdateKey extends Component {
     handleUpdateKey = (e) => {
@@ -13,15 +13,22 @@ class UpdateKey extends Component {
         e.preventDefault();
     }
 
+    componentDidMount() {
+        if (localStorage.getItem("token"))
+            this.props.pingThunk(localStorage.getItem("token"));
+    }
+
     render() {
         return(
-            <div>
-                <h2>Update API Keys</h2>
-                <form onSubmit={this.handleUpdateKey}>
-                    <input type="text" name="apikey" placeholder="Your API Key"/><br/>
-                    <input type="text" name="secretkey" placeholder="Your SECRET Key"/><br/>
-                    <input type="submit" value="Update"/>
-                </form>
+            <div className="auth">
+                <div className="auth__container">
+                    <h2 className="auth__container--title">Update API Keys</h2>
+                    <form className="auth__container__form" onSubmit={this.handleUpdateKey}>
+                        <input className="auth__container__form--input" type="text" name="apikey" placeholder="Your API Key"/><br/>
+                        <input className="auth__container__form--input" type="text" name="secretkey" placeholder="Your SECRET Key"/><br/>
+                        <input className="auth__container__form--btn" type="submit" value="Update"/>
+                    </form>
+                </div>
             </div>
         );  
     }
@@ -32,7 +39,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-    updateApiThunk
+    updateApiThunk,
+    pingThunk
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdateKey);

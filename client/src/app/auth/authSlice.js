@@ -1,16 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginThunk, pingThunk, updateApiThunk } from "./api/authThunks";
+import { loginThunk, pingThunk, updateApiThunk, updateUserThunk } from "./api/authThunks";
 
 export const authSlice = createSlice({
     name: "auth",
     initialState: {
         token: null,
-        apiSet: false
+        apiSet: false,
+        loading: true
     },
     extraReducers: (builder) => {
         builder.addCase(loginThunk.fulfilled, (state, action) => {
-            state.token = action.payload.token;
             localStorage.setItem("token", action.payload.token);
+            state.token = action.payload.token;
         });
 
         builder.addCase(updateApiThunk.fulfilled, (state, action) => {
@@ -18,20 +19,40 @@ export const authSlice = createSlice({
                 state.apiSet = true
         });
 
+        builder.addCase(updateUserThunk.fulfilled, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(updateUserThunk.pending, (state) => {
+            state.loading = true;
+        });
+
+        builder.addCase(updateUserThunk.rejected, (state) => {
+            state.loading = false;
+        });
+
         builder.addCase(pingThunk.fulfilled, (state, action) => {
-            state.token = localStorage.getItem("token");
-            if (action.payload.connected)
+            if (action.payload.connected) {
+                state.token = localStorage.getItem("token");
                 state.apiSet = action.payload.apikey;
-            else {
+                state.loading = false;
+            } else {
                 localStorage.removeItem("token");
                 state.token = null;
+                state.apiSet = false;
+                state.loading = false;
             }
+        });
+
+        builder.addCase(pingThunk.pending, (state) => {
+            state.loading = true;
         });
 
         builder.addCase(pingThunk.rejected, (state) => {
             localStorage.removeItem("token");
             state.token = null;
             state.apiSet = false;
+            state.loading = false;
         });
     }
 });

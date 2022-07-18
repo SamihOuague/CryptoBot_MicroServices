@@ -20,10 +20,23 @@
         }
         &__logs {
             margin-top: 56px;
+            border-top: 2px solid white;
+            min-height: 160px;
+            max-height: 240px;
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
             &__log {
                 display: flex;
                 justify-content: space-around;
                 border-bottom: 1px solid whitesmoke;
+            }
+            &__nothing {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: larger;
+                flex: 1;
             }
         }
     }
