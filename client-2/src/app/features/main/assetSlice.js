@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getAssetsThunk = createAsyncThunk("asset/getAsset", async (asset) => {
-    let response = await (await fetch(`http://51:83:43:54:3002/${asset}`, {
+    let response = await (await fetch(`http://51.83.43.54:3002/${asset}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -13,7 +13,7 @@ export const getAssetsThunk = createAsyncThunk("asset/getAsset", async (asset) =
 });
 
 export const switchSymbolThunk = createAsyncThunk("asset/switchAsset", async (symbol) => {
-    let response = await (await fetch(`http://51:83:43:54:3002/switch/${symbol}`, {
+    let response = await (await fetch(`http://51.83.43.54:3002/switch/${symbol}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

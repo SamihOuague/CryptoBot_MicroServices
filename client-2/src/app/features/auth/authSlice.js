@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
     try {
-        const response = await (await fetch("http://localhost:3001/login", {
+        const response = await (await fetch("http://51.83.43.54:3001/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -18,7 +18,7 @@ export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
 
 export const updateLogAsyncThunk = createAsyncThunk("auth/updateLog", async (data) => {
     try {
-        const response = await (await fetch("http://51:83:43:54:3001/update-user", {
+        const response = await (await fetch("http://51.83.43.54:3001/update-user", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
