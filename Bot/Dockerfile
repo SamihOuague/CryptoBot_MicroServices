@@ -1,12 +1,13 @@
-FROM debian:9
+FROM ubuntu:latest
 
 RUN apt-get update -yq \
+&& apt-get upgrade -yq \
 && apt-get install python3 -yq \
 && apt-get install python3-pip -yq \
 && pip3 install requests \
 && pip3 install numpy \
 && pip3 install pandas \
-&& pip3 install ta 
+&& pip3 install ta
 
 ADD . /app/
 WORKDIR /app

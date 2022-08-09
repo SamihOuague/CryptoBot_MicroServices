@@ -35,6 +35,8 @@ def priceActionSell(candles):
         return True
     return False
 
+sleep(5)
+
 bot = BinanceBot(priceActionBuy, priceActionSell)
 
 token = requests.post("http://manager:3002/bot-connect", json={"pwd": "helloworld123"}).json()["token"]

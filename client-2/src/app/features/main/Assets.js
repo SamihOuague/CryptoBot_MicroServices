@@ -40,7 +40,6 @@ export function Assets() {
     };
 
     let logs = [];
-
     if (!status) dispatch(getAssetsThunk("BNBUSDT"));
     else if (status === "Succeed" && wallets && symbol) {
         if (wallets.code && wallets.code === -2014) {
