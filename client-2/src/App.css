@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgb(37, 37, 37);
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.container__nav {
+  min-width: 305px;
+  padding: 10px 0px;
+  display: flex;
+  justify-content: space-between;
+}
+.container__nav a {
+  text-decoration: none;
+  color: white;
+  border: 1px solid white;
+  padding: 8px;
+}
+.container__nav a i {
+  margin-right: 8px;
+}
+.container form {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+}
+.container form input {
+  margin: 6px 0;
+  height: 26px;
+}
+.container form button {
+  margin: 6px 0;
+  height: 26px;
+  border: none;
+  background-color: white;
+  cursor: pointer;
+}
+.container__asset {
+  background-color: rgb(25, 25, 25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  color: white;
+  height: 350px;
+  min-width: 250px;
+  font-size: 21px;
+}
+.container__asset h3 {
+  margin: 0;
+}
+.container__asset__nothing {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container__asset__nothing p {
+  text-align: center;
+  font-size: 16px;
+}
+.container__asset__logs {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+.container__asset__logs__log {
+  display: flex;
+  font-size: 16px;
+  justify-content: space-between;
+  border-bottom: 1px solid white;
+  width: 100%;
+}
+.container__asset__logs__log--date {
+  margin: 5px;
+}
+.container__asset__logs__log--percent {
+  margin: 5px;
+}
+.container__asset hr {
+  width: 100%;
+}
+
+.btn--onoff {
+  font-size: 24px;
+  border-radius: 50%;
+  width: 75px;
+  height: 75px;
+  background-color: rgb(36, 34, 34);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn--red {
+  color: red;
+  border: 2px solid red;
+}
+.btn--green {
+  color: green;
+  border: 2px solid green;
+}
+
+@keyframes spinning {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spinner i {
+  font-size: 52px;
+  color: rgb(162, 162, 162);
+  animation: spinning 3s linear infinite;
+}
+
+/*# sourceMappingURL=App.css.map */

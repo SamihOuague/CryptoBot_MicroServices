@@ -1,17 +1,19 @@
 const router = require("express").Router();
-const { getAssets, 
-        sellPosition, 
+const { sellPosition, 
         repayPosition, 
         getSymbol,
         symbolSwitch,
-        botConnect
+        botConnect,
+        buyPosition,
+        closePosition,
 } = require("./Controller");
 
-router.get("/get-assets", getAssets);
 router.get("/:symbol", getSymbol);
 router.post("/sell-position", sellPosition);
 router.post("/repay-position", repayPosition);
 router.post("/switch/:symbol", symbolSwitch);
 router.post("/bot-connect", botConnect);
+router.post("/buy-position", buyPosition);
+router.post("/close-position", closePosition);
 
 module.exports = router;

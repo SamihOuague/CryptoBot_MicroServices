@@ -1,0 +1,15 @@
+@keyframes spinning {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.spinner {
+    i {
+        font-size: 52px;
+        color: rgb(162, 162, 162);
+        animation: spinning 3s linear infinite;
+    }
+}

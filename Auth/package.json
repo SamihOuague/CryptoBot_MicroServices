@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "env-cmd -f ./config/test.env jest --watchAll --detectOpenHandles",
-    "start": "env-cmd -f ./config/dev.env node index.js"
+    "start": "env-cmd -f ./config/dev.env node index.js",
+    "prod": "env-cmd -f ./config/prod.env node index.js"
   },
   "author": "SamihOuague",
   "license": "ISC",

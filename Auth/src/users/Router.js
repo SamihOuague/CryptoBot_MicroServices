@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { register, login, updateAPIKey, ping, updateLogs } = require("./Controller");
+const { login, updateAPIKey, ping, updateLogs } = require("./Controller");
 
 
 router.post("/login", login);

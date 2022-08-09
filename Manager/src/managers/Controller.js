@@ -2,11 +2,43 @@ const { assets, order, borrow, ticker } = require("./api/binanceAPI");
 const Model = require("./Model");
 const jwt = require("jsonwebtoken");
 
+function toPrecision(x, p=3) {
+    let n = Number(x);
+    if (!n) return 0;
+    n = String(x);
+    n = n.split(".");
+    if (n[1])
+        n[1] = n[1].substring(0, p);
+    return n.join(".");
+}
+
 module.exports = {
-    getAssets: async (req, res) => {
+    buyPosition: async (req, res) => {
         try {
-            let response = await assets("BNBUSDT");
-            return res.status(200).send(response.assets[0]);
+            let symbol = await Model.findOne({symbol: "BNBUSDT"});
+            if (!symbol.actived)
+                return res.status(400).send({disabled: true});
+            let asset = (await assets("BNBUSDT")).assets[0];
+            let free = toPrecision(asset.quoteAsset.free);
+            if (!symbol.logs.length) {
+                symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
+                (await symbol.save());
+            }
+            let o = await order("BUY", free, "BNBUSDT");
+            return res.status(200).send(o);
+        } catch(err) {
+            return res.status(400).send({err});
+        }
+    },
+    closePosition: async (req, res) => {
+        try {
+            let asset = (await assets("BNBUSDT")).assets[0]; 
+            let free = toPrecision(asset.quoteAsset.free);
+            let symbol = await Model.findOne({symbol: "BNBUSDT"});
+            let o = await order("BUY", free, "BNBUSDT");
+            symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
+            (await symbol.save());
+            return res.status(200).send(o);
         } catch(err) {
             return res.status(400).send({err});
         }
@@ -18,19 +50,13 @@ module.exports = {
                 return res.status(400).send({disabled: true});
             let asset = (await assets("BNBUSDT")).assets[0];
             let price = Number((await ticker("BNBUSDT")).price);    
-            let free = Number(asset.quoteAsset.free * 3);
-            let b = String(free / price);
-            let o;
-            let f;
-            b = b.split(".");
-            b[1] = b[1].substring(0, 2);
-            b = b.join(".");
+            let free = Number(toPrecision(asset.quoteAsset.free));
+            let b = toPrecision(free / price);
             await borrow(b, "BNBUSDT");
             asset = (await assets("BNBUSDT")).assets[0];
-            f = asset.baseAsset.free.split(".");
-            f[1] = f[1].substring(0, 2);
-            f = f.join(".");
-            o = await order("SELL", f, "BNBUSDT");
+            free = toPrecision(asset.baseAsset.free);
+            
+            o = await order("SELL", free, "BNBUSDT");
             return res.status(200).send(o);
         } catch(err) {
             return res.status(400).send({err});
@@ -43,9 +69,7 @@ module.exports = {
             let borrowed = Number(asset.baseAsset.borrowed);
             let symbol = await Model.findOne({symbol: "BNBUSDT"});
             let o;
-            borrowed = String(borrowed*price).split(".");
-            borrowed[1] = borrowed[1].substring(0, 2);
-            borrowed = borrowed.join(".");
+            borrowed = toPrecision(borrowed*price);
             o = await order("BUY", borrowed, "BNBUSDT");
             asset = (await assets("BNBUSDT")).assets[0];
             symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
@@ -60,7 +84,8 @@ module.exports = {
             if (!req.params.symbol) return res.sendStatus(400);
             let symbol = await Model.findOne({symbol: req.params.symbol.toUpperCase()});
             if (!symbol) return res.sendStatus(400);
-            return res.status(200).send(symbol);
+            let asset = await assets(req.params.symbol.toUpperCase());
+            return res.status(200).send({symbol, asset});
         } catch(err) {
             return res.status(400).send({err});
         }

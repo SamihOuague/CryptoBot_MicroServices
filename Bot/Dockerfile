@@ -4,7 +4,8 @@ RUN apt-get update -yq \
 && apt-get install python3 -yq \
 && apt-get install python3-pip -yq \
 && pip3 install requests \
-&& pip3 install numpy
+&& pip3 install numpy \
+&& pip3 install pandas
 
 ADD . /app/
 WORKDIR /app
