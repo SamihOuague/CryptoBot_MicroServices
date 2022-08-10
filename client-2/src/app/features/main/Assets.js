@@ -9,9 +9,9 @@ export function Assets() {
     const { wallets, status, symbol, loadingSwitch } = useSelector((state) => state.asset);
     const netFunds = (assets) => {
         try {
-            let borrowed = (Number(assets.indexPrice) * Number(assets.baseAsset.borrowed));
+            let netBase = (Number(assets.indexPrice) * Number(assets.baseAsset.netAsset));
             let netFunds = Number(assets.quoteAsset.free);
-            netFunds = String(netFunds - borrowed).split(".");
+            netFunds = String(netFunds + netBase).split(".");
             netFunds[1] = netFunds[1].substring(0, 2);
             netFunds = netFunds.join(".");
             return netFunds;

@@ -12,10 +12,10 @@ services:
     build: ./Manager
     ports:
       - "3002:3002"
-  client:
-    build: ./Front
-    ports:
-      - "3000:3000"
+#  client:
+#    build: ./Front
+#    ports:
+#      - "3000:3000"
   bot:
     build: ./Bot
 

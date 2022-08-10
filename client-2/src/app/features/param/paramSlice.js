@@ -21,13 +21,12 @@ export const paramSlice = createSlice(
             msg: "",
         },
         extraReducers: (builder) => {
-            builder.addCase(updateApiThunk.fulfilled, (state, action) => {
+            builder.addCase(updateApiThunk.fulfilled, (state) => {
                 state.loading = false;
                 state.msg = "API Key update succeed.";
             }).addCase(updateApiThunk.pending, (state) => {
                 state.loading = true;
-            }
-            ).addCase(updateApiThunk.rejected, (state, action) => {
+            }).addCase(updateApiThunk.rejected, (state) => {
                 state.loading = false;
                 state.msg = "Invalid API Key !"
             });

@@ -20,10 +20,6 @@ module.exports = {
                 return res.status(400).send({disabled: true});
             let asset = (await assets("BNBUSDT")).assets[0];
             let free = toPrecision(asset.quoteAsset.free);
-            if (!symbol.logs.length) {
-                symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
-                (await symbol.save());
-            }
             let o = await order("BUY", free, "BNBUSDT");
             return res.status(200).send(o);
         } catch(err) {
@@ -33,11 +29,14 @@ module.exports = {
     closePosition: async (req, res) => {
         try {
             let asset = (await assets("BNBUSDT")).assets[0]; 
-            let free = toPrecision(asset.quoteAsset.free);
+            let free = toPrecision(asset.baseAsset.free);
             let symbol = await Model.findOne({symbol: "BNBUSDT"});
-            let o = await order("BUY", free, "BNBUSDT");
-            symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
-            (await symbol.save());
+            let o = await order("SELL", free, "BNBUSDT");
+            asset = (await assets("BNBUSDT")).assets[0];
+            if (o.orderId) {
+                symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
+                (await symbol.save());
+            }
             return res.status(200).send(o);
         } catch(err) {
             return res.status(400).send({err});
@@ -55,7 +54,6 @@ module.exports = {
             await borrow(b, "BNBUSDT");
             asset = (await assets("BNBUSDT")).assets[0];
             free = toPrecision(asset.baseAsset.free);
-            
             o = await order("SELL", free, "BNBUSDT");
             return res.status(200).send(o);
         } catch(err) {
@@ -72,8 +70,10 @@ module.exports = {
             borrowed = toPrecision(borrowed*price);
             o = await order("BUY", borrowed, "BNBUSDT");
             asset = (await assets("BNBUSDT")).assets[0];
-            symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
-            (await symbol.save());
+            if (o.orderId) {
+                symbol.logs.push(Date.now() + " " + asset.quoteAsset.free);
+                (await symbol.save());
+            }
             return res.status(200).send(o);
         } catch(err) {
             return res.status(400).send({err});
@@ -105,7 +105,7 @@ module.exports = {
     botConnect: async (req, res) => {
         try {
             if (req.body.pwd != process.env.BOTPWD) return res.status(400).send({msg: "Unauthorized"});
-            let token = jwt.sign({name: "zbiboubot"}, process.env.SECRETJWT);
+            let token = jwt.sign({name: "cryptobot"}, process.env.SECRETJWT);
             return res.status(200).send({token});
         } catch(err) {
             return res.status(400).send({msg: "Unauthorized"});
