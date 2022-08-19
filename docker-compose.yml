@@ -1,13 +1,13 @@
 version: '3'
 services:
-  db:
-    image: mongo
-    volumes:
-      - botvolumes:/var/bot
-  auth:
-    build: ./Auth
-    ports:
-      - "3001:3001"
+#  db:
+#    image: mongo
+#    volumes:
+#      - botvolumes:/var/bot
+#  auth:
+#    build: ./Auth
+#    ports:
+#      - "3001:3001"
   manager:
     build: ./Manager
     ports:
@@ -16,8 +16,8 @@ services:
 #    build: ./Front
 #    ports:
 #      - "3000:3000"
-  bot:
-    build: ./Bot
+#  bot:
+#    build: ./Bot
 
 volumes:
   botvolumes: {}
