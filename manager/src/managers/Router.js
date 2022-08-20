@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { buyPosition, 
         sellPosition,
         createOco,
+        ping,
 } = require("./Controller");
 
 router.post("/buy-position", buyPosition);

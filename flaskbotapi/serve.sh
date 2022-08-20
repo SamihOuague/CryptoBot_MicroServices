@@ -1,0 +1,1 @@
+uwsgi --socket 0.0.0.0:3031 --manage-script-name --mount /app=index:app

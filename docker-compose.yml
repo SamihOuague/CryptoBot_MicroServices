@@ -1,23 +1,34 @@
 version: '3'
-services:
-#  db:
-#    image: mongo
-#    volumes:
-#      - botvolumes:/var/bot
-#  auth:
-#    build: ./Auth
-#    ports:
-#      - "3001:3001"
-  manager:
-    build: ./Manager
-    ports:
-      - "3002:3002"
-#  client:
-#    build: ./Front
-#    ports:
-#      - "3000:3000"
-#  bot:
-#    build: ./Bot
 
-volumes:
-  botvolumes: {}
+services:
+  db:
+    image: mongo
+    expose:
+      - "27017"
+  manager:
+    build: ./manager
+    expose:
+      - "3002"
+  auth:
+    build: ./auth
+    expose:
+      - "3001"
+  app:
+    build: ./flaskbotapi
+    depends_on:
+      - manager
+      - auth
+    expose:
+      - "3031"
+  server:
+    build: ./server
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+  client:
+    build: ./client
+    depends_on:
+      - server
+    expose:
+      - "3000"
