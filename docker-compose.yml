@@ -27,7 +27,7 @@ services:
     ports:
       - "80:80"
   client:
-    build: ./client
+    build: ./front
     depends_on:
       - server
     expose:

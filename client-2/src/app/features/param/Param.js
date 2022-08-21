@@ -16,7 +16,9 @@ export function Param() {
     }
     return (
         <div className="container">
-            <Link to="/">Back</Link>
+            <div className="container__nav">
+                <Link to="/"><i className="fa-solid fa-angle-left"></i>Back</Link>
+            </div>
             <h2>Update API Key</h2>
             <form onSubmit={handleSubmit}>
                 <input name="apikey" placeholder="API Key" type="text" />

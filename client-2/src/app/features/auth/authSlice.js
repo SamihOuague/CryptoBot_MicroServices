@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
     try {
-        const response = await (await fetch("http://51.83.43.54:3001/login", {
+        const response = await (await fetch("http://api.localhost/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -16,9 +16,25 @@ export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
     }
 });
 
+export const pingAsyncThunk = createAsyncThunk("auth/ping", async () => {
+    try {
+        const response = await (await fetch("http://api.localhost/ping", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": `Barear ${localStorage.getItem("token")}`,
+            }
+        })).json();
+        return response;
+    } catch(err) {
+        return err;
+    }
+});
+
 export const updateLogAsyncThunk = createAsyncThunk("auth/updateLog", async (data) => {
     try {
-        const response = await (await fetch("http://51.83.43.54:3001/update-user", {
+        const response = await (await fetch("http://api.localhost/update-user", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -37,6 +53,8 @@ export const updateLogAsyncThunk = createAsyncThunk("auth/updateLog", async (dat
 const initialState = {
     token: localStorage.getItem("token"),
     pending: false,
+    apiKey: false,
+    connected: false
 };
 
 export const authSlice = createSlice({
@@ -52,6 +70,7 @@ export const authSlice = createSlice({
         builder.addCase(loginAsyncThunk.fulfilled, (state, action) => {
             if (action.payload.token) {
                 state.token = action.payload.token;
+                state.apiKey = action.payload.apiKey;
                 localStorage.setItem("token", action.payload.token);
             }
             state.pending = false;
@@ -61,6 +80,24 @@ export const authSlice = createSlice({
         }).addCase(loginAsyncThunk.rejected, (state) => {
             state.token = null;
             state.pending = false;
+        });
+
+        builder.addCase(pingAsyncThunk.fulfilled, (state, action) => {
+            if (!action.payload.connected) {
+                state.token = null;
+                state.pending = false;
+                localStorage.removeItem("token");
+            } else {
+                state.apiKey = action.payload.apiKey;
+                state.connected = true;
+            }
+        }).addCase(pingAsyncThunk.pending, (state) => {
+            state.pending = true;
+        }).addCase(pingAsyncThunk.rejected, (state) => {
+            state.token = null;
+            state.pending = false;
+            state.connected = false;
+            localStorage.removeItem("token");
         });
 
         builder.addCase(updateLogAsyncThunk.fulfilled, (state) => {

@@ -57,7 +57,7 @@ def update_api():
 @app.route("/")
 @login_required
 def list_processes():
-    return [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]
+    return {"processes": [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]}
 
 @app.route("/start", methods=["POST"])
 @login_required
@@ -66,7 +66,7 @@ def run_process():
     if not symbol in processes or processes[symbol].exitcode != None:
         processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
         processes[symbol].start()
-    return [{"name": p, "exitcode": processes[p].exitcode} for p in processes]
+    return {"processes": [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]}
 
 @app.route("/get/<name>")
 @login_required
@@ -85,5 +85,5 @@ def stop_process():
         p = processes[req["symbol"].upper()]
         p.kill()
         p.join()
-        return {"name": req["symbol"], "exitcode": p.exitcode}
+        return {"processes": [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]}
     return {"msg": "Process not found."}

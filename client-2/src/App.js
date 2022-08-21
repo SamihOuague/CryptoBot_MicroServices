@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route } from "react-router-dom";
 import { Protected } from './app/features/auth/Protected';
 import { AuthForm } from "./app/features/auth/AuthForm";
-import { Assets } from "./app/features/main/Assets";
+import { Main } from "./app/features/main/Main";
 import { Param } from "./app/features/param/Param";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
 		<Routes>	
 			<Route path="/" element={
 				<Protected>
-					<Assets/>
+					<Main/>
 				</Protected>
 			} />
 			<Route path="/parameters" element={
