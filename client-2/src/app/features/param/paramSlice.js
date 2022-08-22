@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const updateApiThunk = createAsyncThunk("param/updateApi", async (data) => {
-    const response = await (await fetch("http://api.localhost/update-api", {
+    const response = await (await fetch(`${process.env.REACT_APP_API_URL}/update-api`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

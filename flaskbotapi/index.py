@@ -5,6 +5,7 @@ from flask import request
 import multiprocessing as mp
 from lib.auth import login, jwt_ping, update
 from lib.BNBot import BNBot
+from lib.manager import all_assets
 import pandas as pd
 import pandas_ta as ta
 from datetime import datetime
@@ -63,17 +64,28 @@ def list_processes():
 @login_required
 def run_process():
     symbol = request.json["symbol"].upper()
-    if not symbol in processes or processes[symbol].exitcode != None:
+    if not symbol in processes and symbol != "":
         processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
         processes[symbol].start()
-    return {"processes": [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]}
+        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+    return {"msg": "Process already exists."}
+
+@app.route("/restart", methods=["POST"])
+@login_required
+def restart_process():
+    symbol = request.json["symbol"].upper()
+    if symbol in processes:
+        processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
+        processes[symbol].start()
+        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+    return {"msg": "Process not founds."}
 
 @app.route("/get/<name>")
 @login_required
 def get_process(name):
     name = name.upper()
     if name in processes:
-        return {"name": name, "exitcode": processes[name].exitcode}
+        return {"name": name, "running": processes[name].is_alive(), "exitcode": processes[name].exitcode}
     else:
         return {"msg": "Processe not found."}
 
@@ -85,5 +97,23 @@ def stop_process():
         p = processes[req["symbol"].upper()]
         p.kill()
         p.join()
-        return {"processes": [{"name": p, "running": processes[p].is_alive(), "exitcode": processes[p].exitcode} for p in processes]}
+        return {"name": req["symbol"].upper(), "running": p.is_alive(), "exitcode": p.exitcode}
     return {"msg": "Process not found."}
+
+@app.route("/delete", methods=["POST"])
+@login_required
+def delete_process():
+    symbol = request.json["symbol"].upper()
+    if symbol  in processes:
+        p = processes[symbol]
+        if p.is_alive():
+            p.kill()
+            p.join()
+        del processes[symbol]
+        return {"deleted": True}
+    return {"msg": "Process not found."}
+
+@app.route("/list-assets", methods=["GET"])
+def list_assets():
+    assets = all_assets()
+    return assets

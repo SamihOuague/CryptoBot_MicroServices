@@ -1,4 +1,4 @@
-const { getAssets, sellOrder, buyOrder } = require("./api/binanceAPI");
+const { getAssets, sellOrder, buyOrder, getAllPairs } = require("./api/binanceAPI");
 
 function toPrecision(x, p=2) {
     let n = Number(x);
@@ -47,4 +47,8 @@ module.exports = {
         let oco = await ocoOrder(base, toPrecision(takeProfit, 4), toPrecision(stopLoss, 4) ,"BNBETH");
         return res.send(oco);
     },
+    allAssets: async (req, res) => {
+        const pairs = await (await getAllPairs());
+        return res.send(pairs);
+    }
 }

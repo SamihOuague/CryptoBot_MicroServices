@@ -28,6 +28,15 @@ body {
 .container__nav a i {
   margin-right: 8px;
 }
+.container__nav--delete {
+  color: red;
+  border: 1px solid red;
+  padding: 8px;
+  cursor: pointer;
+}
+.container__nav--delete i {
+  margin-right: 8px;
+}
 .container form {
   display: flex;
   flex-direction: column;
@@ -44,7 +53,19 @@ body {
   background-color: white;
   cursor: pointer;
 }
-.container__assets {
+.container__asset__logs {
+  width: 100%;
+  overflow-y: scroll;
+  height: 150px;
+}
+.container__asset__logs--log {
+  display: flex;
+  justify-content: space-between;
+}
+.container__asset__logs--log p {
+  margin: 8px 0px;
+}
+.container__assets, .container__asset {
   background-color: rgb(25, 25, 25);
   display: flex;
   flex-direction: column;
@@ -55,33 +76,41 @@ body {
   min-width: 250px;
   font-size: 18px;
 }
-.container__assets__add {
+.container__assets hr, .container__asset hr {
+  width: 100%;
+  margin-top: 28px;
+}
+.container__assets__add, .container__asset__add {
   display: flex;
   justify-content: space-around;
   width: 100%;
 }
-.container__assets__add input {
+.container__assets__add input, .container__asset__add input {
   height: 26px;
   font-size: 18px;
 }
-.container__assets__list {
+.container__assets__list, .container__asset__list {
   margin-top: 10px;
-  border: 1px solid white;
   flex: 1;
   width: 100%;
 }
-.container__assets__list__elt {
-  border: 1px solid white;
+.container__assets__list__elt, .container__asset__list__elt {
+  border-bottom: 1px solid white;
+  margin: 8px 0;
   padding: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.container__assets__list__elt--status {
+.container__assets__list__elt--status, .container__asset__list__elt--status {
   width: 18px;
   height: 18px;
   border-radius: 50%;
   cursor: pointer;
+}
+.container__assets__list__elt--name, .container__asset__list__elt--name {
+  text-decoration: none;
+  color: white;
 }
 
 .red-status {
@@ -90,6 +119,14 @@ body {
 
 .green-status {
   background-color: green;
+}
+
+.win {
+  color: green;
+}
+
+.loss {
+  color: red;
 }
 
 .btn--onoff {

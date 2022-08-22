@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
     try {
-        const response = await (await fetch("http://api.localhost/login", {
+        const response = await (await fetch(`${process.env.REACT_APP_API_URL}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -18,7 +18,7 @@ export const loginAsyncThunk = createAsyncThunk("auth/login", async (data) => {
 
 export const pingAsyncThunk = createAsyncThunk("auth/ping", async () => {
     try {
-        const response = await (await fetch("http://api.localhost/ping", {
+        const response = await (await fetch(`${process.env.REACT_APP_API_URL}/ping`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const pingAsyncThunk = createAsyncThunk("auth/ping", async () => {
 
 export const updateLogAsyncThunk = createAsyncThunk("auth/updateLog", async (data) => {
     try {
-        const response = await (await fetch("http://api.localhost/update-user", {
+        const response = await (await fetch(`${process.env.REACT_APP_API_URL}/update-user`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -21,6 +21,15 @@
                 margin-right: 8px;
             }
         }
+        &--delete {
+            color: red;
+            border: 1px solid red;
+            padding: 8px;
+            cursor: pointer;
+            i {
+                margin-right: 8px;
+            }
+        }
     }
     form {
         display: flex;
@@ -38,7 +47,21 @@
             cursor: pointer;
         }
     }
-    &__assets {
+    &__asset {
+        &__logs {
+            width: 100%;
+            overflow-y: scroll;
+            height: 150px;
+            &--log {
+                display: flex;
+                justify-content: space-between;
+                p {
+                    margin: 8px 0px;
+                }
+            }
+        }
+    }
+    &__assets, &__asset {
         background-color: rgb(25, 25, 25);
         display: flex;
         flex-direction: column;
@@ -48,6 +71,10 @@
         height: 350px;
         min-width: 250px;
         font-size: 18px;
+        hr {
+            width: 100%;
+            margin-top: 28px;
+        }
         &__add {
             display: flex;
             justify-content: space-around;
@@ -59,11 +86,11 @@
         }
         &__list {
             margin-top: 10px;
-            border: 1px solid white;
             flex: 1;
             width: 100%;
             &__elt {
-                border: 1px solid white;
+                border-bottom: 1px solid white;
+                margin: 8px 0;
                 padding: 6px;
                 display: flex;
                 align-items: center;
@@ -74,10 +101,16 @@
                     border-radius: 50%;
                     cursor: pointer;
                 }
+                &--name {
+                    text-decoration: none;
+                    color: white;
+                }
             }
         }
     }
 }
+
+
 
 .red-status {
     background-color: red;
@@ -85,4 +118,12 @@
 
 .green-status {
     background-color: green;
+}
+
+.win {
+    color: green;
+}
+
+.loss {
+    color: red;
 }
