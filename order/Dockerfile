@@ -11,4 +11,4 @@ RUN npm install
 
 CMD ["npm", "run", "start"]
 
-EXPOSE 3003
+EXPOSE 3002

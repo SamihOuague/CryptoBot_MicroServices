@@ -96,13 +96,11 @@ export const assetSlice = createSlice({
             if (action.payload.deleted)
                 state.asset = null;
             state.pending = false;
-            state.redirect = true;
         }).addCase(deleteProcessThunk.pending, (state) => {
             state.pending = true;
         }).addCase(deleteProcessThunk.rejected, (state) => {
             state.asset = null;
             state.pending = false;
-            state.redirect = true;
         });
     }
 });

@@ -5,8 +5,12 @@ services:
     image: mongo
     expose:
       - "27017"
-  manager:
+  manager: 
     build: ./manager
+    expose:
+      - "3003"
+  order:
+    build: ./order
     expose:
       - "3002"
   auth:

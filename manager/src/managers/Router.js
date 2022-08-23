@@ -1,13 +1,12 @@
 const router = require("express").Router();
-const { buyPosition, 
-        sellPosition,
-        createOco,
-        allAssets,
-} = require("./Controller");
+const { allPairs, addAsset, listAssets, updateAsset, deleteAsset, updateLog } = require("./Controller");
 
-router.post("/buy-position", buyPosition);
-router.post("/sell-position", sellPosition);
-router.post("/create-oco", createOco);
-router.get("/all-assets", allAssets);
+
+router.get("/", listAssets);
+router.get("/all-pairs", allPairs);
+router.post("/add-asset", addAsset);
+router.put("/update-asset", updateAsset);
+router.delete("/delete-asset", deleteAsset);
+router.post("/update-log", updateLog);
 
 module.exports = router;

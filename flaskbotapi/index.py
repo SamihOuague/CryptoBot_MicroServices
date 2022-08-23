@@ -1,13 +1,11 @@
 from functools import wraps
-from textwrap import wrap
 from flask import Flask
 from flask import request
 import multiprocessing as mp
 from lib.auth import login, jwt_ping, update
 from lib.BNBot import BNBot
-from lib.manager import all_assets
+from lib.manager import all_assets, add_asset, delete_asset, update_asset
 import pandas as pd
-import pandas_ta as ta
 from datetime import datetime
 
 processes = {}
@@ -63,12 +61,19 @@ def list_processes():
 @app.route("/start", methods=["POST"])
 @login_required
 def run_process():
-    symbol = request.json["symbol"].upper()
-    if not symbol in processes and symbol != "":
-        processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
-        processes[symbol].start()
-        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
-    return {"msg": "Process already exists."}
+    try:
+        symbol = request.json["symbol"].upper()
+        if not symbol in processes and symbol != "":
+            a = add_asset({"symbol": symbol})
+            if "_id" in a:
+                processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
+                processes[symbol].start()
+                return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+            else:
+                return {"msg": "Bad request"}
+        return {"msg": "Process already exists."}
+    except:
+        return {"msg": "Bad request"}, 400
 
 @app.route("/restart", methods=["POST"])
 @login_required
@@ -103,17 +108,31 @@ def stop_process():
 @app.route("/delete", methods=["POST"])
 @login_required
 def delete_process():
-    symbol = request.json["symbol"].upper()
-    if symbol  in processes:
-        p = processes[symbol]
-        if p.is_alive():
-            p.kill()
-            p.join()
-        del processes[symbol]
-        return {"deleted": True}
-    return {"msg": "Process not found."}
+    try:
+        symbol = request.json["symbol"].upper()
+        if symbol in processes:
+            p = processes[symbol]
+            if p.is_alive():
+                p.kill()
+                p.join()
+            del processes[symbol]
+            delete_asset({"symbol": symbol})
+            return {"deleted": True}
+        return {"msg": "Process not found."}
+    except:
+        return {"msg": "Bad request"}
 
 @app.route("/list-assets", methods=["GET"])
+@login_required
 def list_assets():
     assets = all_assets()
     return assets
+
+@app.route("/update-assets", methods=["POST"])
+@login_required
+def stoplimit_assets():
+    try:
+        assets = update_asset(request.json)
+        return assets
+    except:
+        return {"msg": "Bad request"}

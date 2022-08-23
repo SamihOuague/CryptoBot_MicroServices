@@ -31,7 +31,7 @@
             }
         }
     }
-    form {
+    &__auth {
         display: flex;
         flex-direction: column;
         min-width: 240px;
@@ -48,6 +48,13 @@
         }
     }
     &__asset {
+        &__params {
+            display: flex;
+            margin-top: 16px;
+            input {
+                margin: 6px 6px;
+            }
+        }
         &__logs {
             width: 100%;
             overflow-y: scroll;
@@ -68,7 +75,7 @@
         align-items: center;
         padding: 30px;
         color: white;
-        height: 350px;
+        height: 420px;
         min-width: 250px;
         font-size: 18px;
         hr {

@@ -1,5 +1,6 @@
 from lib.binance import getCandles
-from lib.manager import buy, sell
+from lib.order import buy, sell
+from lib.manager import update_log
 import time
 
 class BNBot:
@@ -28,9 +29,9 @@ class BNBot:
     def longPosition(self):
         response = buy()
         if "orderId" in response:
-            self.positionOn = True
-            self.stopLoss = self.candles[-1][4] - (self.candles[-1][4] * response["stopLoss"])
-            self.takeProfit = self.candles[-1][4] + (self.candles[-1][4] * response["takeProfit"])
+            self.positionOn = self.candles[-1][4]
+            self.stopLoss = self.candles[-1][4] - (self.candles[-1][4] * float(response["stoploss"]))
+            self.takeProfit = self.candles[-1][4] + (self.candles[-1][4] * float(response["takeprofit"]))
         return response
 
     def closePosition(self):
@@ -45,6 +46,12 @@ class BNBot:
                 if not self.positionOn and action_func(self.candles):
                     self.longPosition()
                 elif self.positionOn:
-                    if self.candles[-1][4] <= self.stopLoss or self.candles[-1][4] >= self.takeProfit:
+                    if self.candles[-1][4] <= self.stopLoss:
                         self.closePosition()
+                        percent = round(((float(self.positionOn) - float(self.candles[-1][4])) / float(self.positionOn))*100, 2)
+                        update_log({"log": "LOSS -{}%".format(percent)})
+                    elif self.candles[-1][4] >= self.takeProfit:
+                        self.closePosition()
+                        percent = round(((float(self.candles[-1][4]) - float(self.positionOn)) / float(self.positionOn))*100, 2)
+                        update_log({"log": "WIN {}%".format(percent)})
             time.sleep(5)

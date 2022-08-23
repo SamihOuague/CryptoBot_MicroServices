@@ -6,15 +6,11 @@ const Schema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    stoploss: {
-        type: String,
-        default: "0.01",
+    actived: {
+        type: Boolean,
+        defaultValue: true
     },
-    takeprofit: {
-        type: String,
-        default: "0.01",
-    },
-    logs: [String],
+    logs: [String]
 });
 
 module.exports = mongoose.model("manager", Schema);

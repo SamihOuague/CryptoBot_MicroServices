@@ -37,21 +37,28 @@ body {
 .container__nav--delete i {
   margin-right: 8px;
 }
-.container form {
+.container__auth {
   display: flex;
   flex-direction: column;
   min-width: 240px;
 }
-.container form input {
+.container__auth input {
   margin: 6px 0;
   height: 26px;
 }
-.container form button {
+.container__auth button {
   margin: 6px 0;
   height: 26px;
   border: none;
   background-color: white;
   cursor: pointer;
+}
+.container__asset__params {
+  display: flex;
+  margin-top: 16px;
+}
+.container__asset__params input {
+  margin: 6px 6px;
 }
 .container__asset__logs {
   width: 100%;
@@ -72,7 +79,7 @@ body {
   align-items: center;
   padding: 30px;
   color: white;
-  height: 350px;
+  height: 420px;
   min-width: 250px;
   font-size: 18px;
 }

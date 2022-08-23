@@ -1,12 +1,12 @@
 {
-  "name": "manager",
+  "name": "order",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "env-cmd -f ./config/dev.env node index.js",
     "test": "env-cmd -f ./config/test.env jest --watchAll --detectOpenHandles",
-    "prod": "env-cmd -f ./config/prod.env node index.js"
+    "prod": "env-cmd -f ./config/prod.env"
   },
   "author": "",
   "license": "ISC",

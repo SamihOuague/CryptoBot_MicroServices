@@ -43,7 +43,8 @@ export const mainSlice = createSlice({
     initialState: {
         processes: [],
         pending: false,
-        assets: []
+        assets: [],
+        apiNotSet: false,
     },
     extraReducers: (builder) => {
         builder.addCase(listAsyncThunk.fulfilled, (state, action) => {
@@ -66,7 +67,10 @@ export const mainSlice = createSlice({
         });
 
         builder.addCase(getAssetsAsyncThunk.fulfilled, (state, action) => {
-            state.assets = action.payload;
+            if (!action.payload.msg) { 
+                state.assets = action.payload; 
+                state.apiNotSet = false;
+            } else state.apiNotSet = true;
         }).addCase(getAssetsAsyncThunk.pending, (state) => {
             state.pending = true;
         }).addCase(getAssetsAsyncThunk.rejected, (state) => {

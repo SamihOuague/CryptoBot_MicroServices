@@ -25,7 +25,7 @@ export function AuthForm() {
     else if (token) return (<Navigate to="/"/>)
     return (
         <div className="container">
-            <form onSubmit={(e) => handleSubmit(e)}>
+            <form className="container__auth" onSubmit={(e) => handleSubmit(e)}>
                 <input type="text" name="username" placeholder="Username"/>
                 <input type="password" name="password" placeholder="Password"/>
                 <button type="submit">login</button>

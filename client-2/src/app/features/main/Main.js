@@ -4,14 +4,16 @@ import { logOut } from "../auth/authSlice";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { listAsyncThunk, startProcessAsyncThunk, getAssetsAsyncThunk } from "./mainSlice";
+import { resetState } from "../asset/assetSlice";
 
 export function Main() {
     const dispatch = useDispatch();
-    const { processes, pending, assets } = useSelector((state) => state.main);
+    const { processes, pending, assets, apiNotSet } = useSelector((state) => state.main);
     let symbol = "";
     useEffect(() => {
         dispatch(listAsyncThunk());
         dispatch(getAssetsAsyncThunk());
+        dispatch(resetState());
         //eslint-disable-next-line
     }, []);
     const ProcessElt = (props) => (
@@ -25,13 +27,13 @@ export function Main() {
     );
     if (!localStorage.getItem("token"))
         return (<Navigate to="/login"/>)
-    if (pending) return (
+    if (pending) { return (
         <div className="container">
             <div className="spinner">
                 <i className="fa-solid fa-spinner"></i>
             </div>
-        </div>
-    );
+        </div>);
+    } else if (apiNotSet) { return (<Navigate to="/parameters"/>); }
     return (
         <div className="container">
             <div className="container__nav">
