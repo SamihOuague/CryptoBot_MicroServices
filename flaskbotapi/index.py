@@ -4,29 +4,29 @@ from flask import request
 import multiprocessing as mp
 from lib.auth import login, jwt_ping, update
 from lib.BNBot import BNBot
-from lib.manager import all_assets, add_asset, delete_asset, update_asset
+from lib.manager import all_assets, add_asset, delete_asset, update_asset, get_asset
 import pandas as pd
+import pandas_ta as ta
 from datetime import datetime
 
 processes = {}
 
-def long_strategy(candles):
+def short_strategy(candles):
     dates = [datetime.fromtimestamp(c[0]/1000) for c in candles]
     df = pd.DataFrame([c[1:] for c in candles[:-1]], index=dates[:-1], columns=["open", "high", "low", "close", "volume"])
-    df["CHOP"] = df.ta.chop(14)
+    df["EMA25"] = df.ta.ema(25)
     df["EMA50"] = df.ta.ema(50)
     df["EMA100"] = df.ta.ema(100)
     df["EMA150"] = df.ta.ema(150)
     df["RSI"] = df.ta.rsi(14)
     df["TREND"] = df.ta.ttm_trend()
-    if df["EMA150"][-1] < df["EMA100"][-1] < df["EMA50"][-1] and df["CHOP"][-1] < 30 and df["RSI"][-1] < 70 and df["TREND"][-1] == 1:
-        #print("BUY IT : {}".format(candles[-1][4]))
+    if df["close"][-1] > df["EMA50"][-1] > df["EMA100"][-1] > df["EMA150"][-1] and df["TREND"][-1] == -1 and df["RSI"][-1] > 30 and df["close"][-1] > df["EMA25"][-1] > df["open"][-1]:
         return True
     return False
 
 def run_bot(symbol):
     bot = BNBot(symbol)
-    bot.run(long_strategy)
+    bot.run(short_strategy)
 
 app = Flask(__name__)
 
@@ -82,15 +82,17 @@ def restart_process():
     if symbol in processes:
         processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
         processes[symbol].start()
-        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+        asset = get_asset(symbol)
+        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
     return {"msg": "Process not founds."}
 
 @app.route("/get/<name>")
 @login_required
 def get_process(name):
     name = name.upper()
+    asset = get_asset(name)
     if name in processes:
-        return {"name": name, "running": processes[name].is_alive(), "exitcode": processes[name].exitcode}
+        return {"name": name, "running": processes[name].is_alive(), "exitcode": processes[name].exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
     else:
         return {"msg": "Processe not found."}
 
@@ -102,7 +104,8 @@ def stop_process():
         p = processes[req["symbol"].upper()]
         p.kill()
         p.join()
-        return {"name": req["symbol"].upper(), "running": p.is_alive(), "exitcode": p.exitcode}
+        asset = get_asset(req["symbol"].upper())
+        return {"name": req["symbol"].upper(), "running": p.is_alive(), "exitcode": p.exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
     return {"msg": "Process not found."}
 
 @app.route("/delete", methods=["POST"])
@@ -128,7 +131,7 @@ def list_assets():
     assets = all_assets()
     return assets
 
-@app.route("/update-assets", methods=["POST"])
+@app.route("/update-asset", methods=["PUT"])
 @login_required
 def stoplimit_assets():
     try:

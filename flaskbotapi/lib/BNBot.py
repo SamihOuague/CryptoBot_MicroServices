@@ -26,16 +26,16 @@ class BNBot:
         else:
             return False
 
-    def longPosition(self):
-        response = buy()
+    def shortPosition(self):
+        response = sell(self.symbol)
         if "orderId" in response:
             self.positionOn = self.candles[-1][4]
-            self.stopLoss = self.candles[-1][4] - (self.candles[-1][4] * float(response["stoploss"]))
-            self.takeProfit = self.candles[-1][4] + (self.candles[-1][4] * float(response["takeprofit"]))
+            self.stopLoss = self.candles[-1][4] + (self.candles[-1][4] * float(response["stoploss"]))
+            self.takeProfit = self.candles[-1][4] - (self.candles[-1][4] * float(response["takeprofit"]))
         return response
 
     def closePosition(self):
-        response = sell()
+        response = buy(self.symbol)
         if "orderId" in response:
             self.positionOn = False
         return response
@@ -44,14 +44,14 @@ class BNBot:
         while True:
             if (self.updateCandle()):
                 if not self.positionOn and action_func(self.candles):
-                    self.longPosition()
+                    self.shortPosition()
                 elif self.positionOn:
-                    if self.candles[-1][4] <= self.stopLoss:
+                    if self.candles[-1][4] >= self.stopLoss:
                         self.closePosition()
                         percent = round(((float(self.positionOn) - float(self.candles[-1][4])) / float(self.positionOn))*100, 2)
-                        update_log({"log": "LOSS -{}%".format(percent)})
-                    elif self.candles[-1][4] >= self.takeProfit:
+                        update_log({"log": "LOSS {}%".format(percent)})
+                    elif self.candles[-1][4] <= self.takeProfit:
                         self.closePosition()
-                        percent = round(((float(self.candles[-1][4]) - float(self.positionOn)) / float(self.positionOn))*100, 2)
+                        percent = round(((float(self.positionOn) - float(self.candles[-1][4])) / float(self.positionOn))*100, 2)
                         update_log({"log": "WIN {}%".format(percent)})
             time.sleep(5)

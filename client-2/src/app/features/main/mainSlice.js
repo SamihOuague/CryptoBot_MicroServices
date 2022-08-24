@@ -48,7 +48,10 @@ export const mainSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(listAsyncThunk.fulfilled, (state, action) => {
-            if (action.payload.processes) state.processes = action.payload.processes;
+            if (action.payload.processes) {
+                state.processes = action.payload.processes;
+                state.apiNotSet = false;
+            }
             state.pending = false;
         }).addCase(listAsyncThunk.pending, (state) => {
             state.pending = true;

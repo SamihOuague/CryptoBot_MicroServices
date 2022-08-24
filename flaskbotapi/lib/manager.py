@@ -22,3 +22,7 @@ def update_log(data):
 def update_asset(data):
     response = requests.put("http://manager:3003/update-asset", json=data).json()
     return response
+
+def get_asset(symbol):
+    response = requests.get("http://manager:3003/asset/{}".format(symbol)).json();
+    return response

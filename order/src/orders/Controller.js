@@ -24,9 +24,9 @@ module.exports = {
     buyPosition: async (req, res) => {
         try {
             const { symbol } = req.body;
-            let asset = await (await getAssets("BNBETH")).assets[0];
+            let asset = await (await getAssets(symbol)).assets[0];
             let quote = toPrecision(asset.quoteAsset.free, 2);
-            let order = await buyOrder(quote, "BNBETH");
+            let order = await buyOrder(quote, symbol);
             let mng = await ManagerModel.findOne({symbol});
             return res.status(200).send({...order, stoploss: mng.stoploss, takeprofit: mng.takeprofit});
         } catch(err) {

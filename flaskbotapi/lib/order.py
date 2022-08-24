@@ -1,9 +1,9 @@
 import requests
 
-def buy():
-    response = requests.post("http://order:3002/buy-position").json()
+def buy(symbol):
+    response = requests.post("http://order:3002/buy-position", json={"symbol": symbol}).json()
     return response
 
-def sell():
-    response = requests.post("http://order:3002/sell-position").json()
+def sell(symbol):
+    response = requests.post("http://order:3002/sell-position", json={"symbol": symbol}).json()
     return response

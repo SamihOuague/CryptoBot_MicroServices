@@ -7,11 +7,27 @@
     background-color: rgb(37, 37, 37);
     color: white;
     font-family: Helvetica, Arial, sans-serif;
+    &__update {
+        display: flex;
+        flex-direction: column;
+        min-width: 240px;
+        input {
+            margin: 6px 0;
+            height: 26px;
+        }
+        button {
+            margin: 6px 0;
+            height: 26px;
+            border: none;
+            background-color: white;
+            cursor: pointer;
+        }
+    }
     &__nav {
-        min-width: 305px;
+        width: 100%;
         padding: 10px 0px;
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         a {
             text-decoration: none;
             color: white;
@@ -53,6 +69,14 @@
             margin-top: 16px;
             input {
                 margin: 6px 6px;
+                max-width: 50px;
+            }
+            button {
+                margin: 6px 0;
+                height: 26px;
+                border: none;
+                background-color: white;
+                cursor: pointer;
             }
         }
         &__logs {

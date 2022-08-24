@@ -9,6 +9,14 @@ module.exports = {
     listAssets: async (req, res) => {
         return res.send(await Model.find());
     }, 
+    getAsset: async (req, res) => {
+        try {
+            if (req.params.symbol) return res.send(await Model.findOne({symbol: req.params.symbol}));
+            return res.send({"msg": "Bad request."});
+        } catch(err) {
+            return res.send({err});
+        }
+    },
     addAsset: async (req, res) => {
         try {
             const { symbol } = req.body;

@@ -38,6 +38,19 @@ export const deleteProcessThunk = createAsyncThunk("asset/deleteProcess", async 
     return response;
 });
 
+export const updateProcessThunk = createAsyncThunk("asset/updateProcess", async (data) => {
+    let response = await (await fetch(`${process.env.REACT_APP_API_URL}/update-asset`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Barear ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(data),
+    })).json();
+    return response;
+});
+
 export const restartProcessThunk = createAsyncThunk("asset/restart", async (data) => {
     let response = await (await fetch(`${process.env.REACT_APP_API_URL}/restart`, {
         method: "POST",
@@ -101,6 +114,12 @@ export const assetSlice = createSlice({
         }).addCase(deleteProcessThunk.rejected, (state) => {
             state.asset = null;
             state.pending = false;
+        });
+
+        builder.addCase(updateProcessThunk.fulfilled, (state) => {
+            state.pending = false;
+        }).addCase(updateProcessThunk.pending, (state) => {
+            state.pending = true;
         });
     }
 });
