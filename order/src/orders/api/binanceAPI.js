@@ -4,9 +4,9 @@ const mongoose = require("mongoose");
 const UserModel = mongoose.model("user", new mongoose.Schema({apiKey: String, secretKey: String}, {collection: "users"}));
 
 module.exports = {
-    borrow: async (amount, symbol = "BNBUSDT") => {
+    borrow: async (amount, symbol = "BNBUSDT", asset = "BNB") => {
         let url = "https://api.binance.com/sapi/v1/margin/loan";
-        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&asset=BNB&amount=" + String(amount) + "&symbol=" + symbol;
+        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&asset=" + asset + "&amount=" + String(amount) + "&symbol=" + symbol;
         let user = await UserModel.findOne({username: "admin"});
         let hashSign = crypto.createHmac("sha256", user.secretKey).update(sign).digest("hex");
         url = url + "?" + sign + "&signature="+hashSign;
@@ -20,7 +20,7 @@ module.exports = {
     },
     buyOrder: async (qt, symbol = "BNBUSDT") => {
         let url = "https://api.binance.com/sapi/v1/margin/order";
-        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=BUY&type=MARKET&symbol=" + symbol;
+        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=BUY&sideEffectType=AUTO_REPAY&type=MARKET&symbol=" + symbol;
         let user = await UserModel.findOne({username: "admin"});
         sign = sign + "&quoteOrderQty=" + qt;
         let hashSign = crypto.createHmac("sha256", user.secretKey).update(sign).digest("hex");
@@ -35,7 +35,7 @@ module.exports = {
     },
     sellOrder: async (qt, symbol = "BNBUSDT") => {
         let url = "https://api.binance.com/sapi/v1/margin/order";
-        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=SELL&type=MARKET&symbol=" + symbol;
+        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=SELL&sideEffectType=AUTO_REPAY&type=MARKET&symbol=" + symbol;
         let user = await UserModel.findOne({username: "admin"});
         sign = sign + "&quantity=" + qt;
         let hashSign = crypto.createHmac("sha256", user.secretKey).update(sign).digest("hex");
@@ -50,7 +50,7 @@ module.exports = {
     },
     ocoOrder: async (qt, price, stopPrice, symbol = "BNBUSDT") => {
         let url = "https://api.binance.com/sapi/v1/margin/order/oco";
-        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=SELL&stopPrice="+ stopPrice +"&stopLimitPrice=" + stopPrice + "&symbol=" + symbol;
+        let sign = "timestamp=" + String(Date.now()) + "&isIsolated=TRUE&side=SELL&sideEffectType=AUTO_REPAY&stopPrice="+ stopPrice +"&stopLimitPrice=" + stopPrice + "&symbol=" + symbol;
         let user = await UserModel.findOne({username: "admin"});
         sign = sign + "&quantity=" + qt + "&price=" + price +"&stopLimitTimeInForce=GTC";
         let hashSign = crypto.createHmac("sha256", user.secretKey).update(sign).digest("hex");

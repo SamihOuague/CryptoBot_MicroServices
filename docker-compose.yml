@@ -3,8 +3,8 @@ version: '3'
 services:
   db:
     image: mongo
-    expose:
-      - "27017"
+    ports:
+      - "27017:27017"
   manager: 
     build: ./manager
     expose:

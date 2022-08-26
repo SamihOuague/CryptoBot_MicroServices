@@ -1,11 +1,15 @@
 const router = require("express").Router();
 const { buyPosition, 
         sellPosition,
-        createOco,
+        borrowAndSell,
+        buyWithQt,
+        sellWithQt,
 } = require("./Controller");
 
 router.post("/buy-position", buyPosition);
 router.post("/sell-position", sellPosition);
-router.post("/create-oco", createOco);
+router.post("/borrow-n-sell", borrowAndSell);
+router.post("/buy-n-repay", buyWithQt);
+router.post("/sell-n-repay", sellWithQt);
 
 module.exports = router;

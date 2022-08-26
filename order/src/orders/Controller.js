@@ -1,4 +1,4 @@
-const { getAssets, sellOrder, buyOrder } = require("./api/binanceAPI");
+const { getAssets, sellOrder, buyOrder, borrow } = require("./api/binanceAPI");
 const mongoose = require("mongoose");
 const ManagerModel = mongoose.model("manager", new mongoose.Schema({stoploss: String, takeprofit: String}, {collection: "managers"}));
 
@@ -45,12 +45,24 @@ module.exports = {
             return res.send({err});
         }
     },
-    createOco: async (req, res) => {
-        let asset = await (await getAssets("BNBETH")).assets[0];
+    borrowAndSell: async (req, res) => {
+        const { symbol, bAsset } = req.body;
+        let asset = await (await getAssets(symbol)).assets[0];
+        let quote = toPrecision(asset.quoteAsset.free, 2);
         let base = toPrecision(asset.baseAsset.free, 2);
-        let takeProfit = Number(asset.indexPrice) + (Number(asset.indexPrice) * 0.005);
-        let stopLoss = Number(asset.indexPrice) - (Number(asset.indexPrice) * 0.01);
-        let oco = await ocoOrder(base, toPrecision(takeProfit, 4), toPrecision(stopLoss, 4) ,"BNBETH");
-        return res.send(oco);
+        let convertedQuote = toPrecision(1 * (Number(quote) / Number(asset.indexPrice)));
+        await borrow(convertedQuote, symbol, bAsset);
+        let t = await sellOrder(toPrecision(Number(convertedQuote)), symbol);
+        return res.send(t);
+    },
+    buyWithQt: async (req, res) => {
+        const { symbol, qt } = req.body;
+        let t = await buyOrder(toPrecision(qt), symbol);
+        return res.send(t);
+    },
+    sellWithQt: async (req, res) => {
+        const { symbol, qt } = req.body;
+        let t = await sellOrder(toPrecision(qt), symbol);
+        return res.send(t);
     }
 }
