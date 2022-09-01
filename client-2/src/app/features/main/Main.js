@@ -16,6 +16,7 @@ export function Main() {
         dispatch(resetState());
         //eslint-disable-next-line
     }, []);
+
     const ProcessElt = (props) => (
         <div className="container__assets__list__elt">
             <Link to={`/asset/${props.name}`} className="container__assets__list__elt--name">{props.name}</Link>
@@ -25,14 +26,27 @@ export function Main() {
             }
         </div>
     );
+
+    const handleStart = (side) => {
+        dispatch(startProcessAsyncThunk({
+            symbol, 
+            side, 
+            leverage: 5, 
+            stoploss: 0.01, 
+            takeprofit: 0.01,
+        }));
+    };
+
     if (!localStorage.getItem("token"))
-        return (<Navigate to="/login"/>)
-    if (pending) { return (
-        <div className="container">
-            <div className="spinner">
-                <i className="fa-solid fa-spinner"></i>
+        return (<Navigate to="/login"/>);
+    if (pending) { 
+        return (
+            <div className="container">
+                <div className="spinner">
+                    <i className="fa-solid fa-spinner"></i>
+                </div>
             </div>
-        </div>);
+        );
     } else if (apiNotSet) { return (<Navigate to="/parameters"/>); }
     return (
         <div className="container">
@@ -53,7 +67,8 @@ export function Main() {
                             <option key={key}>{value}</option>
                         ))}
                     </select>
-                    <button onClick={() => dispatch(startProcessAsyncThunk({symbol}))}>Add</button>
+                    <button onClick={() => handleStart("LONG")}>Long</button>
+                    <button onClick={() => handleStart("SHORT")}>Short</button>
                 </div>
                 <div className="container__assets__list">
                     {processes.map((value, key) => (

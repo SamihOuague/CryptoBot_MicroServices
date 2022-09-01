@@ -27,8 +27,7 @@ module.exports = {
             let asset = await (await getAssets(symbol)).assets[0];
             let quote = toPrecision(asset.quoteAsset.free, 2);
             let order = await buyOrder(quote, symbol);
-            let mng = await ManagerModel.findOne({symbol});
-            return res.status(200).send({...order, stoploss: mng.stoploss, takeprofit: mng.takeprofit});
+            return res.status(200).send(order);
         } catch(err) {
             return res.send({err})
         }
@@ -39,20 +38,27 @@ module.exports = {
             let asset = await (await getAssets(symbol)).assets[0];
             let base = toPrecision(asset.baseAsset.free, 2);
             let order = await sellOrder(base, symbol);
-            let mng = await ManagerModel.findOne({symbol});
-            return res.status(200).send({...order, stoploss: mng.stoploss, takeprofit: mng.takeprofit});
+            return res.status(200).send(order);
         } catch(err) {
             return res.send({err});
         }
     },
     borrowAndSell: async (req, res) => {
-        const { symbol, bAsset } = req.body;
+        const { symbol, leverage } = req.body;
         let asset = await (await getAssets(symbol)).assets[0];
         let quote = toPrecision(asset.quoteAsset.free, 2);
-        let base = toPrecision(asset.baseAsset.free, 2);
-        let convertedQuote = toPrecision(1 * (Number(quote) / Number(asset.indexPrice)));
-        await borrow(convertedQuote, symbol, bAsset);
+        let convertedQuote = toPrecision((Number(leverage) * (Number(quote)) / Number(asset.indexPrice)));
+        await borrow(toPrecision(convertedQuote), symbol, asset.baseAsset.asset);
         let t = await sellOrder(toPrecision(Number(convertedQuote)), symbol);
+        return res.send(t);
+    },
+    borrowAndBuy: async (req, res) => {
+        const { symbol, leverage } = req.body;
+        let asset = await (await getAssets(symbol)).assets[0];
+        let quote = toPrecision(asset.quoteAsset.free, 2);
+        let convertedQuote = Number(quote) * (Number(leverage) - 1);
+        await borrow(toPrecision(convertedQuote), symbol, asset.quoteAsset.asset);
+        let t = await buyOrder(toPrecision(Number(convertedQuote) + Number(quote)), symbol);
         return res.send(t);
     },
     buyWithQt: async (req, res) => {

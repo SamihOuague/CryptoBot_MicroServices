@@ -3,7 +3,7 @@ from flask import Flask
 from flask import request
 import multiprocessing as mp
 from lib.auth import login, jwt_ping, update
-from lib.BNBot import BNBot
+from lib.CryptoGenerator import CryptoGenerator
 from lib.manager import all_assets, add_asset, delete_asset, update_asset, get_asset
 import pandas as pd
 import pandas_ta as ta
@@ -11,22 +11,30 @@ from datetime import datetime
 
 processes = {}
 
-def short_strategy(candles):
-    dates = [datetime.fromtimestamp(c[0]/1000) for c in candles]
-    df = pd.DataFrame([c[1:] for c in candles[:-1]], index=dates[:-1], columns=["open", "high", "low", "close", "volume"])
-    df["EMA25"] = df.ta.ema(25)
-    df["EMA50"] = df.ta.ema(50)
-    df["EMA100"] = df.ta.ema(100)
-    df["EMA150"] = df.ta.ema(150)
-    df["RSI"] = df.ta.rsi(14)
-    df["TREND"] = df.ta.ttm_trend()
-    if df["close"][-1] > df["EMA50"][-1] > df["EMA100"][-1] > df["EMA150"][-1] and df["TREND"][-1] == -1 and df["RSI"][-1] > 30 and df["close"][-1] > df["EMA25"][-1] > df["open"][-1]:
+def short_strategy(candles_1m, candles_5m):
+    df_1m = pd.DataFrame([c[1:] for c in candles_1m], index=range(len(candles_1m)), columns=["open", "high", "low", "close", "volume"])
+    df_5m = pd.DataFrame([c[1:] for c in candles_5m], columns=["open", "high", "low", "close", "volume"])
+    df_1m["TREND"] = df_1m.ta.ttm_trend()
+    df_5m["TREND"] = df_5m.ta.ttm_trend()
+    if df_1m["TREND"][df_1m.index[-1]] == df_5m["TREND"][df_5m.index[-1]] == -1:
         return True
     return False
 
-def run_bot(symbol):
-    bot = BNBot(symbol)
-    bot.run(short_strategy)
+def long_strategy(candles_1m, candles_5m):
+    df_1m = pd.DataFrame([c[1:] for c in candles_1m[:-1]], columns=["open", "high", "low", "close", "volume"])
+    df_5m = pd.DataFrame([c[1:] for c in candles_5m[:-1]], columns=["open", "high", "low", "close", "volume"])
+    df_1m["TREND"] = df_1m.ta.ttm_trend()
+    df_5m["TREND"] = df_5m.ta.ttm_trend()
+    if df_1m["TREND"][df_1m.index[-1]] == df_5m["TREND"][df_1m.index[-1]] == 1:
+        return True
+    return False
+
+def run_bot(symbol, side, leverage, stoploss, takeprofit):
+    bot = CryptoGenerator(symbol, side=side, leverage=leverage, slr=stoploss, tpr=takeprofit)
+    if side == "LONG":
+        bot.run(long_strategy)
+    else:
+        bot.run(short_strategy)
 
 app = Flask(__name__)
 
@@ -38,7 +46,9 @@ def login_required(func):
                 response = jwt_ping(request.headers["Authorization"])
                 if "connected" in response and response["connected"]:
                     return func(*args, **kwargs)
-            return {"msg": "You are not logged in."}
+                return {"msg": "You are not logged in."}
+            else:
+                return {"msg": "Authorization missing."}
         except:
             return {"msg": "Something wrong with token"}
     return auth_middleware
@@ -61,19 +71,23 @@ def list_processes():
 @app.route("/start", methods=["POST"])
 @login_required
 def run_process():
-    try:
-        symbol = request.json["symbol"].upper()
-        if not symbol in processes and symbol != "":
-            a = add_asset({"symbol": symbol})
-            if "_id" in a:
-                processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
-                processes[symbol].start()
-                return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
-            else:
-                return {"msg": "Bad request"}
-        return {"msg": "Process already exists."}
-    except:
-        return {"msg": "Bad request"}, 400
+    #try:
+    symbol = request.json["symbol"].upper()
+    side = request.json["side"].upper()
+    leverage = request.json["leverage"]
+    stoploss = request.json["stoploss"]
+    takeprofit = request.json["takeprofit"]
+    if not symbol in processes and symbol != "":
+        a = add_asset({"symbol": symbol})
+        if "_id" in a:
+            processes[symbol] = mp.Process(target=run_bot, args=(symbol,side,leverage,stoploss,takeprofit,))
+            processes[symbol].start()
+            return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+        else:
+            return {"msg": "Bad request"}
+    return {"msg": "Process already exists."}
+    #except:
+    #    return {"msg": "Bad request"}, 400
 
 @app.route("/restart", methods=["POST"])
 @login_required
@@ -83,7 +97,7 @@ def restart_process():
         processes[symbol] = mp.Process(target=run_bot, args=(symbol,))
         processes[symbol].start()
         asset = get_asset(symbol)
-        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
+        return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
     return {"msg": "Process not founds."}
 
 @app.route("/get/<name>")
@@ -92,7 +106,7 @@ def get_process(name):
     name = name.upper()
     asset = get_asset(name)
     if name in processes:
-        return {"name": name, "running": processes[name].is_alive(), "exitcode": processes[name].exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
+        return {"name": name, "running": processes[name].is_alive(), "exitcode": processes[name].exitcode}
     else:
         return {"msg": "Processe not found."}
 
@@ -105,7 +119,7 @@ def stop_process():
         p.kill()
         p.join()
         asset = get_asset(req["symbol"].upper())
-        return {"name": req["symbol"].upper(), "running": p.is_alive(), "exitcode": p.exitcode, "logs": asset["logs"], "stoploss": asset["stoploss"], "takeprofit": asset["takeprofit"]}
+        return {"name": req["symbol"].upper(), "running": p.is_alive(), "exitcode": p.exitcode}
     return {"msg": "Process not found."}
 
 @app.route("/delete", methods=["POST"])

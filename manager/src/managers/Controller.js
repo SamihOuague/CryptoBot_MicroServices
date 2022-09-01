@@ -1,4 +1,4 @@
-const { getAllPairs } = require("./api/binanceAPI");
+const { getAllPairs, getAssets } = require("./api/binanceAPI");
 const Model = require("./Model");
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
     }, 
     getAsset: async (req, res) => {
         try {
-            if (req.params.symbol) return res.send(await Model.findOne({symbol: req.params.symbol}));
+            if (req.params.symbol) return res.send(await getAssets(req.params.symbol));
             return res.send({"msg": "Bad request."});
         } catch(err) {
             return res.send({err});
