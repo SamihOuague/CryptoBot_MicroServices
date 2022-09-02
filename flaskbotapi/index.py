@@ -25,7 +25,10 @@ def long_strategy(candles_1m, candles_5m):
     df_5m = pd.DataFrame([c[1:] for c in candles_5m[:-1]], columns=["open", "high", "low", "close", "volume"])
     df_1m["TREND"] = df_1m.ta.ttm_trend()
     df_5m["TREND"] = df_5m.ta.ttm_trend()
-    if df_1m["TREND"][df_1m.index[-1]] == df_5m["TREND"][df_1m.index[-1]] == 1:
+    df_1m["MACD"] = df_1m.ta.macd()["MACD_12_26_9"]
+    df_1m["MACD_s"] = df_1m.ta.macd()["MACDs_12_26_9"]
+    df_1m["MACD_h"] = df_1m.ta.macd()["MACDh_12_26_9"]
+    if df_1m["TREND"][df_1m.index[-1]] == df_5m["TREND"][df_1m.index[-1]] == -1 and df_1m["MACD"][-1] > df_1m["MACD_s"][-1] and df_1m["MACD_h"][-1] < 0.04:
         return True
     return False
 
@@ -71,23 +74,23 @@ def list_processes():
 @app.route("/start", methods=["POST"])
 @login_required
 def run_process():
-    #try:
-    symbol = request.json["symbol"].upper()
-    side = request.json["side"].upper()
-    leverage = request.json["leverage"]
-    stoploss = request.json["stoploss"]
-    takeprofit = request.json["takeprofit"]
-    if not symbol in processes and symbol != "":
-        a = add_asset({"symbol": symbol})
-        if "_id" in a:
-            processes[symbol] = mp.Process(target=run_bot, args=(symbol,side,leverage,stoploss,takeprofit,))
-            processes[symbol].start()
-            return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
-        else:
-            return {"msg": "Bad request"}
-    return {"msg": "Process already exists."}
-    #except:
-    #    return {"msg": "Bad request"}, 400
+    try:
+        symbol = request.json["symbol"].upper()
+        side = request.json["side"].upper()
+        leverage = request.json["leverage"]
+        stoploss = request.json["stoploss"]
+        takeprofit = request.json["takeprofit"]
+        if not symbol in processes and symbol != "":
+            a = add_asset({"symbol": symbol})
+            if "_id" in a:
+                processes[symbol] = mp.Process(target=run_bot, args=(symbol,side,leverage,stoploss,takeprofit,))
+                processes[symbol].start()
+                return {"name": symbol, "running": processes[symbol].is_alive(), "exitcode": processes[symbol].exitcode}
+            else:
+                return {"msg": "Bad request"}
+        return {"msg": "Process already exists."}
+    except:
+        return {"msg": "Bad request"}, 400
 
 @app.route("/restart", methods=["POST"])
 @login_required
