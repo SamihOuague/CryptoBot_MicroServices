@@ -28,15 +28,15 @@ export function Asset() {
             <div className="container">
                 <div className="container__nav">
                     <Link to="/"><i className="fa-solid fa-angle-left"></i>Back</Link>
-                    <div onClick={() => dispatch(deleteProcessThunk({symbol}))} className="container__nav--delete"><i className="fa-solid fa-trash"></i>Delete</div>
+                    <div onClick={() => dispatch(deleteProcessThunk({name: symbol}))} className="container__nav--delete"><i className="fa-solid fa-trash"></i>Delete</div>
                 </div>
                 <div className="container__asset">
                     <h3>{symbol.toUpperCase()}</h3>
                     {(asset.running) ?
                         <div className="btn--onoff btn--green" 
-                            onClick={() => dispatch(stopProcessThunk({symbol: symbol.toUpperCase()}))}>ON</div>
+                            onClick={() => dispatch(stopProcessThunk({name: symbol.toUpperCase()}))}>ON</div>
                         : <div className="btn--onoff btn--red"
-                            onClick={() => dispatch(restartProcessThunk({symbol: symbol.toUpperCase()}))}>OFF</div>
+                            onClick={() => dispatch(restartProcessThunk({name: symbol.toUpperCase()}))}>OFF</div>
                     }
                     <hr/>
                     <div className="container__asset__logs">

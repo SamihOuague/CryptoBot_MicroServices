@@ -1,6 +1,4 @@
 const { getAssets, sellOrder, buyOrder, borrow } = require("./api/binanceAPI");
-const mongoose = require("mongoose");
-const ManagerModel = mongoose.model("manager", new mongoose.Schema({stoploss: String, takeprofit: String}, {collection: "managers"}));
 
 function toPrecision(x, p=2) {
     let n = Number(x);
@@ -47,7 +45,7 @@ module.exports = {
         const { symbol, leverage } = req.body;
         let asset = await (await getAssets(symbol)).assets[0];
         let quote = toPrecision(asset.quoteAsset.free, 2);
-        let convertedQuote = toPrecision((Number(leverage) * (Number(quote)) / Number(asset.indexPrice)));
+        let convertedQuote = toPrecision((Number(leverage) * Number(quote)) / Number(asset.indexPrice));
         await borrow(toPrecision(convertedQuote), symbol, asset.baseAsset.asset);
         let t = await sellOrder(toPrecision(Number(convertedQuote)), symbol);
         return res.send(t);

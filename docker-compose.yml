@@ -20,7 +20,6 @@ services:
   app:
     build: ./flaskbotapi
     depends_on:
-      - manager
       - auth
     expose:
       - "3031"
@@ -30,9 +29,9 @@ services:
       - app
     ports:
       - "80:80"
-  client:
-    build: ./front
-    depends_on:
-      - server
-    expose:
-      - "3000"
+  #client:
+  #  build: ./front
+  #  depends_on:
+  #    - server
+  #  expose:
+  #    - "3000"

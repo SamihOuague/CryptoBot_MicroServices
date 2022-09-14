@@ -4,58 +4,53 @@ from lib.manager import get_asset
 import time
 
 class CryptoGenerator:
-    def __init__(self, symbol, side="SHORT", leverage=5, slr=0.01, tpr=0.01):
+    def __init__(self, symbol, action_func, side="SHORT", leverage=5, slr=0.01, tpr=0.01, init_quote=10):
         if side == "LONG":
             self.side = side
         else:
             self.side = "SHORT"
-        self.candles_1m = getCandles(symbol, "1m")
-        self.candles_5m = getCandles(symbol, "5m")
+        self.candles_1m = getCandles(symbol, "15m")
         self.symbol = symbol
         self.position_on = False
         self.stop_loss = 0
         self.take_profit = 0
         self.leverage = leverage
-        self.initial_quote = float(get_asset("BNBUSDT")["assets"][0]["quoteAsset"]["free"]) * self.leverage
+        self.initial_quote = init_quote  * self.leverage
+        self.action_func = action_func
         self.posQt = 0
         self.slr = slr
         self.tpr = tpr
 
 
     def updateCandles(self):
-        if (time.time() * 1000) >= int(self.candles_1m[-1][0] + 60000):
-            candles_1m = getCandles(self.symbol, "1m", int(self.candles_1m[-1][0] + 60000))
-            candles_5m = getCandles(self.symbol, "5m", int(self.candles_5m[-1][0] + (60000*5)))
+        if (time.time() * 1000) >= int(self.candles_1m[-1][0] + (60000*15)):
+            candles_1m = getCandles(self.symbol, "15m", int(self.candles_1m[-1][0] + (60000*15)))
             if len(candles_1m) > 0:
                 if len(candles_1m) == 500:
                     self.candles_1m = candles_1m
                 else:
                     self.candles_1m = self.candles_1m[len(candles_1m):] + candles_1m
-
-            if len(self.candles_5m) > 0:
-                if len(candles_5m) == 500:
-                    self.candles_5m = candles_5m
-                else:
-                    self.candles_5m = self.candles_5m[len(candles_5m):] + candles_5m
             return True
         else:
             return False
     
     def longPosition(self):
         response = borrowAndBuy(self.symbol, self.leverage)
+        print(response)
         if "executedQty" in response:
             self.posQt = response["executedQty"]
-            self.stop_loss = self.candles_1m[-1][4] - (self.candles_1m[-1][4] * 0.01)
-            self.take_profit = self.candles_1m[-1][4] + (self.candles_1m[-1][4] * 0.01)
+            self.stop_loss = self.candles_1m[-1][4] - (self.candles_1m[-1][4] * self.slr)
+            self.take_profit = self.candles_1m[-1][4] + (self.candles_1m[-1][4] * self.tpr)
             self.position_on = self.candles_1m[-1][4]
         return response
     
     def shortPosition(self):
         response = borrowAndSell(self.symbol, self.leverage)
+        print(response)
         if "executedQty" in response:
             self.posQt = response["executedQty"]
-            self.stop_loss = self.candles_1m[-1][4] + (self.candles_1m[-1][4] * 0.01)
-            self.take_profit = self.candles_1m[-1][4] - (self.candles_1m[-1][4] * 0.01)
+            self.stop_loss = self.candles_1m[-1][4] + (self.candles_1m[-1][4] * self.slr)
+            self.take_profit = self.candles_1m[-1][4] - (self.candles_1m[-1][4] * self.tpr)
             self.position_on = self.candles_1m[-1][4]
         return response
     
@@ -94,10 +89,11 @@ class CryptoGenerator:
                 if "orderId" in response:
                     self.position_on = False    
                 return response
-    def run(self, action_func):
+    def run(self):
+        print("Running the bot")
         while True:
             if self.updateCandles():
-                if action_func(self.candles_1m, self.candles_5m) and not self.position_on:
+                if self.action_func(self.candles_1m) and not self.position_on:
                     if self.side == "LONG":
                         self.longPosition()
                     else:

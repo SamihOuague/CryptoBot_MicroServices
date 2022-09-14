@@ -27,13 +27,9 @@ export function Main() {
         </div>
     );
 
-    const handleStart = (side) => {
+    const handleStart = () => {
         dispatch(startProcessAsyncThunk({
-            symbol, 
-            side, 
-            leverage: 5, 
-            stoploss: 0.01, 
-            takeprofit: 0.01,
+            name: symbol,
         }));
     };
 
@@ -63,12 +59,12 @@ export function Main() {
             <div className="container__assets">
                 <div className="container__assets__add">
                     <select onChange={(e) => symbol = e.target.value}>
+                        <option>Choose a Bot</option>
                         {assets.map((value, key) => (
                             <option key={key}>{value}</option>
                         ))}
                     </select>
-                    <button onClick={() => handleStart("LONG")}>Long</button>
-                    <button onClick={() => handleStart("SHORT")}>Short</button>
+                    <button onClick={() => handleStart()}>Start</button>
                 </div>
                 <div className="container__assets__list">
                     {processes.map((value, key) => (
