@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getProcessThunk, stopProcessThunk, restartProcessThunk, deleteProcessThunk, updateProcessThunk } from "./assetSlice";
+import { getProcessThunk, stopProcessThunk, restartProcessThunk, deleteProcessThunk } from "./assetSlice";
 
 export function Asset() {
     const { symbol } = useParams();
