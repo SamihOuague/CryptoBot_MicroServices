@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:20
 
 RUN npm -g install npm && \
     npm -g install env-cmd

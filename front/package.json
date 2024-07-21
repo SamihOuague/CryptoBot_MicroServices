@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "REACT_APP_API_URL=http://localhost node index.js"
+    "start": "env-cmd -f ./config/dev.env node index.js"
   },
   "author": "",
   "license": "ISC",
